@@ -1,4 +1,4 @@
-/* global module, require, document */
+cordova.define("com.tlantic.plugins.socket.Socket", function(require, exports, module) { /* global module, require, document */
 var exec = require('cordova/exec');
 
 //
@@ -7,6 +7,7 @@ function Socket(){
 
     this.receiveHookName = 'SOCKET_RECEIVE_DATA_HOOK';      // *** Event name to act as "hook" for data receiving
     this.pluginRef = 'Socket';                              // *** Plugin reference for Cordova.exec calls
+    this.socketConnectionLost = 'SOCKET_CONNECTION_LOST';
 }
 
 //
@@ -57,4 +58,19 @@ Socket.prototype.receive = function (host, port, connectionId, chunk) {
 
     document.dispatchEvent(evReceive);
 };
+
+Socket.prototype.connectionLost = function () {
+    'use strict';
+
+    var evReceive = document.createEvent('Events');
+
+    evReceive.initEvent(this.socketConnectionLost, true, true);
+    evReceive.metadata = {
+    };
+
+    document.dispatchEvent(evReceive);
+};
+
 module.exports = new Socket();
+
+});

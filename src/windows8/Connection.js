@@ -1,4 +1,4 @@
-/* global module, Windows, console, require */
+cordova.define("com.tlantic.plugins.socket.Connection", function(require, exports, module) { /* global module, Windows, console, require */
 'use strict';
 
 // Connection Class Definition
@@ -79,30 +79,39 @@ module.exports = function Connection(host, port) {
     self.startReader = function startReader() {
 
         // starting to read Async
-        return reader.loadAsync(99999999).then(function(bytesRead) {
+        return reader.loadAsync(9999).done(function (bytesRead) {
 
             // reading buffer
             var chunk;
 
             try {
-                chunk = reader.readString(reader.unconsumedBufferLength);
+                if (bytesRead === 0) {
+                    self.onConnectinLost();
+                }
+                else {
+                    chunk = reader.readString(reader.unconsumedBufferLength);
 
-                // handling data receiving
-                if (bytesRead !== 0 && !mustClose) {
-                    self.onReceive(self.host, self.port, chunk);
+                    // handling data receiving
+                    if (bytesRead !== 0 && !mustClose) {
+                        self.onReceive(self.host, self.port, chunk);
+                    }
+
+                    // checking reading ending
+                    if (mustClose) {
+                        return;
+                    } else {
+                        return startReader();
+                    }
                 }
 
-                // checking reading ending
-                if (mustClose) {
-                    return;
-                } else {
-                    return startReader();
-                }
             } catch (e) {
                 console.log('Unexpected connection closure with ', self.host, ' on port ', self.port, ': ', e);
                 mustClose = true;
+                self.onConnectinLost();
                 return;
             }
+        }, function (err) {
+            self.onConnectinLost();
         });
     };
 
@@ -111,9 +120,16 @@ module.exports = function Connection(host, port) {
         console.log('no callback defined for Socket.OnReceive!');
     };
 
+    self.onConnectinLost = function onConnectinLost() {
+        console.log('no callback defined for Socket.OnReceive!');
+    };
+    
+
     // initializing object instance
     self.init(host, port);
 };
 
 // exporting module
 require('cordova/windows8/commandProxy').add('Connection', module);
+
+});

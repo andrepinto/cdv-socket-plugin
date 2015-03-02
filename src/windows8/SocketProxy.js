@@ -1,4 +1,4 @@
-    /* global console, exports, require */
+cordova.define("com.tlantic.plugins.socket.SocketProxy", function(require, exports, module) {     /* global console, exports, require */
     'use strict';
 
     var Connection = require('com.tlantic.plugins.socket.Connection');
@@ -39,6 +39,7 @@
                 // creating new connection;
                 socket = new Connection(host, port);
                 socket.onReceive = exports.sendMessage;
+                socket.onConnectinLost = exports.connectionLost;
 
                 // opening stream
                 socket.connect(function () {
@@ -177,4 +178,11 @@
         window.tlantic.plugins.socket.receive(host, port, key, data);
     };
 
+   
+    exports.connectionLost = function () {
+
+        window.tlantic.plugins.socket.connectionLost();
+    };
+
     require('cordova/windows8/commandProxy').add('Socket', exports);
+});
