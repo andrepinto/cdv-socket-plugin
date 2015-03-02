@@ -179,9 +179,9 @@ cordova.define("com.tlantic.plugins.socket.SocketProxy", function(require, expor
     };
 
    
-    exports.connectionLost = function () {
+    exports.connectionLost = function (data) {
 
-        window.tlantic.plugins.socket.connectionLost();
+        window.tlantic.plugins.socket.connectionLost(data);
     };
 
     require('cordova/windows8/commandProxy').add('Socket', exports);

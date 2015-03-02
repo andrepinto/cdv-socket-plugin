@@ -59,13 +59,14 @@ Socket.prototype.receive = function (host, port, connectionId, chunk) {
     document.dispatchEvent(evReceive);
 };
 
-Socket.prototype.connectionLost = function () {
+Socket.prototype.connectionLost = function (data) {
     'use strict';
 
     var evReceive = document.createEvent('Events');
 
     evReceive.initEvent(this.socketConnectionLost, true, true);
     evReceive.metadata = {
+        info: data
     };
 
     document.dispatchEvent(evReceive);

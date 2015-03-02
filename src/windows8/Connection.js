@@ -79,7 +79,7 @@ module.exports = function Connection(host, port) {
     self.startReader = function startReader() {
 
         // starting to read Async
-        return reader.loadAsync(9999).done(function (bytesRead) {
+       /* return reader.loadAsync(9999).then(function(bytesRead) {
 
             // reading buffer
             var chunk;
@@ -87,6 +87,38 @@ module.exports = function Connection(host, port) {
             try {
                 if (bytesRead === 0) {
                     self.onConnectinLost();
+                }
+                else {
+                    chunk = reader.readString(reader.unconsumedBufferLength);
+
+                    // handling data receiving
+                    if (bytesRead !== 0 && !mustClose) {
+                        self.onReceive(self.host, self.port, chunk);
+                    }
+
+                    // checking reading ending
+                    if (mustClose) {
+                        return;
+                    } else {
+                        return startReader();
+                    }
+                }
+               
+            } catch (e) {
+                console.log('Unexpected connection closure with ', self.host, ' on port ', self.port, ': ', e);
+                mustClose = true;
+                self.onConnectinLost();
+                return;
+            }
+        });*/
+        return reader.loadAsync(9999).done(function (bytesRead) {
+
+            // reading buffer
+            var chunk;
+
+            try {
+                if (bytesRead === 0) {
+                    self.onConnectinLost({ closeOk: false });
                 }
                 else {
                     chunk = reader.readString(reader.unconsumedBufferLength);
@@ -111,7 +143,7 @@ module.exports = function Connection(host, port) {
                 return;
             }
         }, function (err) {
-            self.onConnectinLost();
+            self.onConnectinLost({closeOk:true});
         });
     };
 
