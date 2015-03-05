@@ -143,7 +143,12 @@ module.exports = function Connection(host, port) {
                 return;
             }
         }, function (err) {
-            self.onConnectinLost({closeOk:true});
+            var socketErrorStatus = Windows.Networking.Sockets.SocketError.getStatus(err.number);
+
+            if (socketErrorStatus === 1)
+                self.onConnectinLost({ closeOk: true });
+            else
+                self.onConnectinLost({ closeOk: false, socketErrorStatus: socketErrorStatus });
         });
     };
 
